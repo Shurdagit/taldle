@@ -1,26 +1,773 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #080d18;
+  --bg2: #0f1829;
+  --bg3: #162035;
+  --border: #1e2d4a;
+  --text: #e8edf5;
+  --text-dim: #6b7fa3;
+  --accent: #f0b429;
+  --accent2: #e07b00;
+  --gold: #ffd700;
+  --silver: #c0c0c0;
+  --bronze: #cd7f32;
+  --higher: #4ade80;
+  --lower: #f87171;
+  --correct: #f0b429;
+  --radius: 10px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── grid background ─── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.25;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#__next, main {
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── Header ─── */
+.header {
+  padding: 18px 16px 12px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  background: rgba(8, 13, 24, 0.85);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header h1 {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(2.4rem, 8vw, 3.4rem);
+  letter-spacing: 0.12em;
+  line-height: 1;
+  background: linear-gradient(135deg, #f0b429 0%, #ff8c00 50%, #f0b429 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header p {
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+/* ─── Help button (?) in header ─── */
+.help-btn {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(240, 180, 41, 0.1);
+  border: 1px solid rgba(240, 180, 41, 0.35);
+  color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  line-height: 1;
+}
+
+.help-btn:hover {
+  background: rgba(240, 180, 41, 0.22);
+  border-color: var(--accent);
+  transform: translateY(-50%) scale(1.08);
+}
+
+/* ─── Side Navigation (desktop only) ─── */
+/* Positioned so right edge sits flush beside the centered 500px game */
+.side-nav {
+  position: fixed;
+  left: calc(50% - 250px - 12px);
+  top: 50%;
+  transform: translate(-100%, -50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 50;
+}
+
+.side-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.1rem;
+  letter-spacing: 0.1em;
+  color: #fff;
+  white-space: nowrap;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.side-btn:hover {
+  transform: translateX(-3px);
+}
+
+.side-btn-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.side-btn-label {
+  line-height: 1;
+}
+
+.side-btn-glosdle {
+  background: linear-gradient(135deg, #1a6fc4 0%, #0ea5e9 100%);
+  box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
+}
+
+.side-btn-tubdle {
+  background: linear-gradient(135deg, #15803d 0%, #22c55e 100%);
+  box-shadow: 0 4px 24px rgba(34, 197, 94, 0.35);
+}
+
+/* On mobile: normal flow, appears below the game as a row */
+@media (max-width: 900px) {
+  .side-nav {
+    position: static;
+    transform: none;
+    flex-direction: row;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 0 16px 16px;
+    gap: 10px;
+  }
+
+  .side-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 12px 8px;
+    font-size: 0.95rem;
+  }
+
+  /* Reset any bottom offset from previous approach */
+  .bottom-bar {
+    bottom: 0;
+  }
+}
+
+/* ─── Game area ─── */
+.game-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px 16px;
+  gap: 20px;
+  max-width: 500px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ─── Guess display ─── */
+.guesses-area {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 60px;
+}
+
+.guess-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  animation: slideIn 0.25s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+.guess-row.correct {
+  border-color: var(--correct);
+  background: rgba(240, 180, 41, 0.08);
+}
+
+.guess-row.higher {
+  border-color: rgba(74, 222, 128, 0.35);
+}
+
+.guess-row.lower {
+  border-color: rgba(248, 113, 113, 0.35);
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.guess-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.5rem;
+  font-weight: 700;
+  min-width: 56px;
+}
+
+.guess-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.guess-hint.higher { color: var(--higher); }
+.guess-hint.lower  { color: var(--lower); }
+.guess-hint.correct { color: var(--correct); }
+
+.hint-arrow {
+  font-size: 1.1rem;
+}
+
+.guess-count {
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+/* ─── Input area ─── */
+.input-area {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.attempts-badge {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.attempts-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+.attempts-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  line-height: 1;
+}
+
+.attempts-value.danger { color: #f87171; }
+.attempts-value.warning { color: #fb923c; }
+
+.input-row {
+  display: flex;
+  width: 100%;
+  gap: 10px;
+}
+
+.number-input {
+  flex: 1;
+  background: var(--bg2);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.6rem;
+  font-weight: 600;
+  text-align: center;
+  padding: 14px 12px;
+  outline: none;
+  transition: border-color 0.2s;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.number-input::-webkit-outer-spin-button,
+.number-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.number-input:focus {
+  border-color: var(--accent);
+}
+
+.number-input::placeholder {
+  color: var(--text-dim);
+  font-size: 1rem;
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+  border: none;
+  border-radius: var(--radius);
+  color: #080d18;
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.4rem;
+  letter-spacing: 0.1em;
+  padding: 14px 24px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+  white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(240,180,41,0.25);
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(240,180,41,0.4);
+}
+
+.submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.submit-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ─── Range hint bar ─── */
+.range-bar {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  height: 6px;
+  position: relative;
+  overflow: visible;
+}
+
+.range-fill {
+  position: absolute;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  border-radius: 50px;
+  transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+
+.range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+/* ─── Bottom bar ─── */
+.bottom-bar {
+  border-top: 1px solid var(--border);
+  background: var(--bg2);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
+}
+
+.bottom-bar-inner {
+  max-width: 500px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bb-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bb-section.right { text-align: right; }
+
+.bb-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.bb-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.06em;
+}
+
+.bb-divider {
+  width: 1px;
+  height: 36px;
+  background: var(--border);
+}
+
+/* ─── Overlay / Popup ─── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 8, 18, 0.88);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 16px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.popup {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px 24px;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+  max-height: 90dvh;
+  overflow-y: auto;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.88) translateY(20px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.popup-medal {
+  font-size: 4rem;
+  line-height: 1;
+  animation: medalBounce 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.2s both;
+}
+
+@keyframes medalBounce {
+  from { transform: scale(0) rotate(-20deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+.popup-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 2.2rem;
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+
+.popup-title.gold     { color: var(--gold); }
+.popup-title.silver   { color: var(--silver); }
+.popup-title.bronze   { color: var(--bronze); }
+.popup-title.gameover { color: #f87171; }
+.popup-title.win      { color: var(--accent); }
+
+/* ─── Platinum medal ─── */
+.popup-title.platinum {
+  background: linear-gradient(135deg, #b8cfe0 0%, #e8f0f8 30%, #a8d0e8 55%, #dce8f4 75%, #b0c8dc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.popup-number-reveal {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(240, 180, 41, 0.1);
+  border: 1px solid rgba(240, 180, 41, 0.3);
+  border-radius: 12px;
+  padding: 10px 28px;
+}
+
+.popup-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+}
+
+.stat-box {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+}
+
+.stat-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.stat-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.popup-timer-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+.popup-timer {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+}
+
+.popup-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--border);
+}
+
+.popup-games-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+}
+
+.game-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+/* ─── Game buttons ─── */
+.game-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 20px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.3rem;
+  letter-spacing: 0.12em;
+  transition: transform 0.15s, box-shadow 0.15s;
+  border: none;
+  cursor: pointer;
+}
+
+.game-btn:hover { transform: translateY(-2px); }
+.game-btn:active { transform: translateY(0); }
+
+.game-btn-glosdle {
+  background: linear-gradient(135deg, #1a6fc4 0%, #0ea5e9 100%);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(14,165,233,0.3);
+}
+
+/* Bright lime-green Tubdle button */
+.game-btn-tubdle {
+  background: linear-gradient(135deg, #15803d 0%, #22c55e 100%);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.4);
+}
+
+.btn-icon {
+  font-size: 1.4rem;
+}
+
+.popup-close {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 4px;
+}
+
+.popup-close:hover { color: var(--text); }
+
+/* ─── Help popup content ─── */
+.help-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.help-rule {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.88rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.help-rule-icon {
+  font-size: 1.1rem;
+  min-width: 22px;
+  text-align: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.medals-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.medal-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.medal-identity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.medal-name {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+/* Platinum gradient text in medals list */
+.platinum-text {
+  background: linear-gradient(135deg, #b8cfe0, #e8f0f8, #a8d0e8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.medal-desc {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Only hide names on truly tiny screens (below typical phone width) */
+@media (max-width: 330px) {
+  .medal-name { display: none; }
+}
+
+/* ─── Error shake ─── */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-8px); }
+  40%       { transform: translateX(8px); }
+  60%       { transform: translateX(-5px); }
+  80%       { transform: translateX(5px); }
+}
+
+.shake { animation: shake 0.4s ease; }
+
+.error-msg {
+  font-size: 0.8rem;
+  color: #f87171;
+  text-align: center;
+  min-height: 18px;
+}
+
+/* ─── Landscape / mobile tweaks ─── */
+@media (max-height: 500px) and (orientation: landscape) {
+  .header { padding: 8px 16px 6px; }
+  .header h1 { font-size: 2rem; }
+  .game-wrapper { padding: 12px 16px 8px; gap: 10px; }
+  .guess-row { padding: 8px 12px; }
+  .guess-number { font-size: 1.2rem; }
+  .bottom-bar { padding: 8px 20px; }
+  .bb-value { font-size: 1rem; }
+}
+
+@media (max-width: 380px) {
+  .header h1 { font-size: 2.2rem; }
+  .number-input { font-size: 1.3rem; }
+  .submit-btn { font-size: 1.1rem; padding: 14px 16px; }
 }
